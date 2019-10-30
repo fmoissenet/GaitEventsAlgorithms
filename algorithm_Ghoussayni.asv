@@ -1,0 +1,63 @@
+function [] = algorithm_Ghoussayni(Fmarkers,rightFootMarkersName,gaitAxis,verticalAxis,gaitDirection,f)
+
+% Calculate the velocities of the markers along gait (V1) and vertical (V2) axes
+for t = 1:n-1
+    for i = 1:length(rightFootMarkersName)
+        V1markers.(rightFootMarkersName{i})(t) = gaitDirection*...
+                                                 (Fmarkers.(rightFootMarkersName{i})(t+1,gaitAxis)- ...
+                                                  Fmarkers.(rightFootMarkersName{i})(t,gaitAxis))/ ...
+                                                  (1/f);
+        V2markers.(rightFootMarkersName{i})(t) = abs(Fmarkers.(rightFootMarkersName{i})(t+1,verticalAxis)- ...
+                                                  Fmarkers.(rightFootMarkersName{i})(t,verticalAxis))/ ...
+                                                  (1/f);
+    end
+end
+                         
+% Velocity thresholds (empirically set)
+% 50 mm/s in the original article for barefoot gait
+% 500 mm/s in Bruening et al., 2014
+% Adjusted for vertical velocity to 200 mm/s
+v1Threshold = 1000;
+v2Threshold = 200;
+
+% Detect events using the velocity threshold
+R_FS = [];
+R_FO = [];
+for t = 1:n-1
+    % Foot strike defined using heel marker
+    if isempty(R_FS) && isempty(R_FO)
+        if (V1markers.RCAL(t) <= v1Threshold && ...
+            V2markers.RCAL(t) <= v2Threshold)
+                R_FS = [R_FS t];
+        end
+    elseif ~isempty(R_FS) && isempty(R_FO)
+    	% Do nothing: wait for a first FO (assume that we detect first a FS)
+    elseif ~isempty(R_FS) && ~isempty(R_FO) && ...
+           length(R_FS) > length(R_FO)
+    	% Do nothing: wait for the next FO (assume that we detect first a FS)
+    elseif ~isempty(R_FS) && ~isempty(R_FO) && ...
+           length(R_FS) == length(R_FO)
+        if (V1markers.RCAL(t) <= v1Threshold && ...
+            V2markers.RCAL(t) <= v2Threshold)
+                R_FS = [R_FS t];
+        end
+    end
+    % Foot off defined using forefoot marker
+    if isempty(R_FS) && isempty(R_FO)
+        % Do nothing: wait for a first FS (assume that we detect first a FS)
+    elseif ~isempty(R_FS) && isempty(R_FO)
+        if (V1markers.RDMT5(t) >= v1Threshold && ...
+            V2markers.RDMT5(t) >= v2Threshold)
+                R_FO = [R_FO t];
+        end
+    elseif ~isempty(R_FS) && ~isempty(R_FO) && ...
+           length(R_FO) < length(R_FS)
+        if (V1markers.RDMT5(t) >= v1Threshold && ...
+            V2markers.RDMT5(t) >= v2Threshold)
+                R_FO = [R_FO t];
+        end
+    elseif ~isempty(R_FS) && ~isempty(R_FO) && ...
+           length(R_FO) == length(R_FS)
+        % Do nothing: wait for the nest FS (assume that we detect first a FS)
+    end
+end

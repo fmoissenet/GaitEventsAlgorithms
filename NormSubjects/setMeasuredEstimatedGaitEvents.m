@@ -1,4 +1,4 @@
-function [mFS,mFO,eFS,eFO] = setMeasuredEstimatedGaitEvents(btkData,FS,FO,n)
+function [mFS,mFO,eFS,eFO] = setMeasuredEstimatedGaitEvents(btkData,FS,FO,n,f)
 
 % Compare velocity threshold-based results with forceplate data (up to 4 PFs)
 temp = btkGetGroundReactionWrenches(btkData);
@@ -18,7 +18,7 @@ for i = 1:length(temp)
     else
         temp2(i) = NaN;
     end
-    twindow = 10; % find similar event in a 10 frame window
+    twindow = fix(20/150*f); % two consecutive events must be at least distant of 20 frame (at 150 Hz)
     for j = 1:length(FO)
         % Foot strike detection
         if abs(temp1(i)-FS(j)) <= twindow

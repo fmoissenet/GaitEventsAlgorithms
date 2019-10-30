@@ -4,7 +4,7 @@ function [mFS,mFO,eFS,eFO] = setMeasuredEstimatedGaitEvents(btkData,FS,FO,n)
 temp = btkGetGroundReactionWrenches(btkData);
 for i = 1:length(temp)
     for t = 1:length(temp(1).F(:,3))
-        if temp(i).F(t,3) < 10 % 10 N threshold on Z axis (vertical)
+        if temp(i).F(t,3) < 15 % 15 N threshold on Z axis (vertical)
             temp(i).F(t,:) = 0;
         end
     end

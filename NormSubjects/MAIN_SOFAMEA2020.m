@@ -21,7 +21,7 @@ cd(subjectFolder)
 c3dList = dir('*.c3d');
 
 % Estimate gait events for each C3D file
-for file = 1:length(c3dList)
+for file = 2%1:length(c3dList)
     % Load 3D trajectories of markers and related frame rate and frame number
     cd(subjectFolder);
     c3dfile = c3dList(file).name;
@@ -40,18 +40,13 @@ for file = 1:length(c3dList)
         Fmarkers.(rightFootMarkersName{i}) = filtfilt(B, A, Rmarkers.(rightFootMarkersName{i}));
     end
 
-    % Define gait axis and direction
+    % Define gait and vertical axes
     tdiff = Fmarkers.(rightFootMarkersName{i})(end,:) - Fmarkers.(rightFootMarkersName{i})(1,:);
     [~,gaitAxis] = max(abs(tdiff));
     verticalAxis = 3; % Z axis vertical
-    if tdiff(gaitAxis) > 0
-        gaitDirection = 1;
-    else
-        gaitDirection = -1;
-    end
 
     % Estimate gait events using Ghoussayni algorithm
-    [FS,FO] = algorithm_Ghoussayni(Fmarkers,rightFootMarkersName,gaitAxis,verticalAxis,gaitDirection,n,f);    
+    [FS,FO] = algorithm_Ghoussayni(Fmarkers,rightFootMarkersName,gaitAxis,verticalAxis,n,f);
     
     % Get gait events measured using forceplates and identified the related
     % estimated gait events

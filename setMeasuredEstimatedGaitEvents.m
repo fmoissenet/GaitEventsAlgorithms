@@ -1,5 +1,11 @@
 function [mFS,mFO,eFS,eFO] = setMeasuredEstimatedGaitEvents(btkData,FS,FO,n,f)
 
+% Initialisation
+mFS = [];
+mFO = [];
+eFS = [];
+eFO = [];
+
 % Compare velocity threshold-based results with forceplate data (up to 4 PFs)
 temp = btkGetGroundReactionWrenches(btkData);
 for i = 1:length(temp)

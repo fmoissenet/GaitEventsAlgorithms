@@ -28,6 +28,8 @@ switch side
 end
 genEvent_frames = (genEvent*f + 1) - ff + 1;
 
+line([genEvent_frames genEvent_frames],[-1000000 1000000],'Color','g','LineWidth',1)
+
 % get the first FO and FS from the general event
 i=1;
 while isempty(eFS) && i<=length(FS)

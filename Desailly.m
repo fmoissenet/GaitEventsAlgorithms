@@ -22,6 +22,9 @@ function [FS,FO] = Desailly(heelMk,footMk,gaitAxis,verticalAxis,f)
     % do not work with the other markers: displacements have too many peaks
 % -------------------------------------------------------------------------
     [~,frame_pks]=findpeaks(filt_heelMk(:,verticalAxis),'MinPeakHeight',100); %25 is too low for the norm data
+    if length(frame_pks)<2 % not enough peaks: try with the minimum peaks
+        [~,frame_pks]=findpeaks(-filt_heelMk(:,verticalAxis),'MinPeakHeight',-100);
+    end
     stridetime=(frame_pks(2)-frame_pks(1))/f;
     gaitFreq = 1/stridetime;
     

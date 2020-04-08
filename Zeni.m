@@ -6,11 +6,12 @@
 % - gaitAxis: number of the gait axis: 1=x, 2=y
 % - verticalAxis: number of the vertical axis (3=z)
 % - n: number of frames
+% - f: frequency of the data (markers)
 %
 % output:
 % - FS = array of foot strikes
 % - FO = array of foot offs
-function [FS,FO] = Zeni(marker,pelvicMk,gaitAxis)%,verticalAxis,n)
+function [FS,FO] = Zeni(marker,pelvicMk,gaitAxis,f)%,verticalAxis,n)
 % -------------------------------------------------------------------------
 % Initialisation
 % -------------------------------------------------------------------------
@@ -37,7 +38,49 @@ FO = [];
 % relative to the sacrum marker
 % (from Zeni paper)
     rel2sacr = marker(:,gaitAxis)-pelvicMk.filtSACR(:,gaitAxis);
-    
-    [~,FS] = findpeaks(rel2sacr);
-    [~,FO] = findpeaks(-rel2sacr);
+% plot(rel2sacr)
+    [pk_values,FS_] = findpeaks(rel2sacr,'MinPeakHeight',mean(rel2sacr));
+    % minimum 30 frames (150Hz) between 2 peaks, if not takes the index
+    % with the greatest peak
+    indexFS = 1;
+    i=1;
+    while i<=length(FS_)
+        if i==length(FS_)
+            FS(indexFS) = FS_(i);
+            i = i + 1;
+        else
+            if FS_(i+1)-FS_(i) > f/5
+                FS(indexFS) = FS_(i);
+                indexFS = indexFS + 1;
+                i = i + 1;
+            else
+                [~,max_ind] = max([pk_values(i) pk_values(i+1)]);
+                FS(indexFS) = FS_(i + max_ind -1);
+                indexFS = indexFS + 1;
+                i = i + 2;
+            end
+        end
+    end
+    [pk_values,FO_] = findpeaks(-rel2sacr,'MinPeakHeight',mean(-rel2sacr));
+    % minimum 30 frames (150Hz) between 2 peaks, if not takes the index
+    % with the greatest peak
+    indexFO = 1;
+    i=1;
+    while i<=length(FO_)
+        if i==length(FO_)
+            FO(indexFO) = FO_(i);
+            i = i + 1;
+        else
+            if FO_(i+1)-FO_(i) > f/5
+                FO(indexFO) = FO_(i);
+                indexFO = indexFO + 1;
+                i = i + 1;
+            else
+                [~,max_ind] = max([pk_values(i) pk_values(i+1)]);
+                FO(indexFO) = FO_(i + max_ind -1);
+                indexFO = indexFO + 1;
+                i = i + 2;
+            end
+        end
+    end
 

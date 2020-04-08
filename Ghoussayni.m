@@ -11,7 +11,6 @@
 % - FS = array of foot strikes
 % - FO = array of foot offs
 function [FS,FO] = Ghoussayni(marker,gaitAxis,verticalAxis,n,f)
-
 % -------------------------------------------------------------------------
 % Initialisation
 % -------------------------------------------------------------------------
@@ -30,6 +29,8 @@ for t = 1:n-1
         marker(t,verticalAxis))^2)/ ...
         (1/f);
 end
+% plot(velocity)
+% line([1 length(velocity)],[500 500])
 
 % -------------------------------------------------------------------------
 % Velocity threshold (empirically set)

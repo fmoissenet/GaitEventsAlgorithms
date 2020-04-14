@@ -22,8 +22,7 @@ FO = [];
     jerkZ_footMk = diff(accZ_footMk)/(1/f);
     
     % define the events from Zeni
-    rel2sacr = footMk(:,gaitAxis)-pelvicMk.filtSACR(:,gaitAxis);
-    [~,FS_zeni] = findpeaks(rel2sacr);
+    [FS_zeni,FO_zeni] = Zeni(footMk,pelvicMk,gaitAxis,f);
     
     % find the first max peak of acceleration of the vertical component after
     % the peaks from Zeni (= first zero of the jerk, positiv to negativ)
@@ -36,7 +35,7 @@ FO = [];
         while ( indJerk<length(jerkZ_footMk) && jerkZ_footMk(indJerk+1)>=0 )
             indJerk = indJerk + 1;
         end % indJerk=length(jerkZ_footMk) or jerkZ_footMk(indJerk+1)<0
-        if indJerk~=length(jerkZ_footMk) % i.e. jerkZ_footMk(indJerk+1)<0
+        if indJerk < length(jerkZ_footMk) % i.e. jerkZ_footMk(indJerk+1)<0
             t2 = indJerk + 1;
             if jerkZ_footMk(indJerk)>0
                 t1 = indJerk;
@@ -46,7 +45,7 @@ FO = [];
                 end % jerkZ_footMk(indJerk)>0
                 t1 = indJerk;
             end
-        else % indJerk=length(jerkZ_footMk)
+        else % indJerk >= length(jerkZ_footMk)
             t1 = NaN;
             t2 = NaN;
         end
@@ -62,7 +61,7 @@ FO = [];
 % plot(accZ_footMk(1:end-10)*20)
 % plot(jerkZ_footMk(1:end-10))
 % for i=1:length(FS_zeni)
-%     line([FS_zeni(i) FS_zeni(i)],[-200000 200000])
+%     line([FS_zeni(i) FS_zeni(i)],[-1000000 1000000],'color','r','LineWidth',1)
 % end
 
 % -------------------------------------------------------------------------
@@ -72,9 +71,6 @@ FO = [];
     velX_footMk = diff(footMk(:,gaitAxis))/(1/f);
     accX_footMk = diff(velX_footMk)/(1/f);
     jerkX_footMk = diff(accX_footMk)/(1/f);
-
-    % define the events from Zeni
-    [~,FO_zeni] = findpeaks(-rel2sacr);
     
     % define the max of acceleration in a window about the FO_zeni events
     % ([-f/5 f/5])
@@ -91,7 +87,7 @@ FO = [];
         while ( indJerk<length(jerkX_footMk) && jerkX_footMk(indJerk+1)>=0 )
             indJerk = indJerk + 1;
         end % indJerk=length(jerkX_footMk) or jerkX_footMk(indJerk+1)<0
-        if indJerk~=length(jerkX_footMk) % i.e. jerkX_footMk(indJerk+1)<0
+        if indJerk < length(jerkX_footMk) % i.e. jerkX_footMk(indJerk+1)<0
             t2 = indJerk + 1;
             if jerkX_footMk(indJerk)>0
                 t1 = indJerk;
@@ -101,7 +97,7 @@ FO = [];
                 end % jerkX_footMk(indJerk)>0
                 t1 = indJerk;
             end
-        else % indJerk=length(jerkX_footMk)
+        else % indJerk >= length(jerkX_footMk)
             t1 = NaN;
             t2 = NaN;
         end
@@ -125,5 +121,5 @@ FO = [];
 % plot(accX_footMk(1:end-10)*20)
 % plot(jerkX_footMk(1:end-10))
 % for i=1:length(FO_zeni)
-%     line([FO_zeni(i) FO_zeni(i)],[-200000 200000])
+%     line([FO_zeni(i) FO_zeni(i)],[-1000000 1000000],'color','r','LineWidth',1)
 % end

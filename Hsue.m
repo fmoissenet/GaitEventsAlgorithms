@@ -20,19 +20,36 @@ function [FS,FO] = Hsue(footMk,pelvicMk,gaitAxis,f)
 % -------------------------------------------------------------------------
     % foot strike = minimum of foot marker acceleration
 % -------------------------------------------------------------------------
-    [~,FS] = findpeaks(-acc_footMk,'MinPeakHeight',max(-acc_footMk(10:end-10))/2);
+%     [~,FS] = findpeaks(-acc_footMk,'MinPeakHeight',max(-acc_footMk(10:end-10))/2);
     % in the max: take back the 10 first and last frames because of extrem
-    % values at the edge of the signal (visually determined from norm data)
+    % values at the edge of the signal
+    % threshold visually determined from norm data
+    % sometimes too many peaks -> use a window about Zeni
+    
+    % define the events from Zeni
+    [FS_zeni,FO_zeni] = Zeni(footMk,pelvicMk,gaitAxis,f);
+
+    % find the greatest peak of acceleration (in a window from -f/5 to f/5
+    % around the peaks from Zeni)
+    for i=1:length(FS_zeni)
+        begin_ = max(1,FS_zeni(i)-f/5);
+        end_ = min(length(acc_footMk),FS_zeni(i)+f/5);
+        [~,index_maxLocal] = max(-acc_footMk(begin_:end_));
+        FS(i) = index_maxLocal + begin_ - 1;
+%         line([FS(i) FS(i)],[0 -50000])
+% if i==2
+%     plot(acc_footMk(begin_:end_))
+%     hold on
+%     line([index_maxLocal index_maxLocal],[0 50000])
+% end
+    end
+
 % line([1 length(acc_footMk)],[min(acc_footMk(1:end-10))/2 min(acc_footMk(1:end-10))/2])
     
 % -------------------------------------------------------------------------
     % foot off = maximum of foot marker acceleration
 % -------------------------------------------------------------------------
 %     [~,FO] = findpeaks(acc_footMk); % too many peaks => use a window
-
-    % define the events from Zeni
-    rel2sacr = footMk(:,gaitAxis)-pelvicMk.filtSACR(:,gaitAxis);
-    [~,FO_zeni] = findpeaks(-rel2sacr);
     
     % find the greatest peak of acceleration (in a window from -f/5 to f/5
     % around the peaks from Zeni)

@@ -7,14 +7,16 @@ clear all
 % addpath(toolboxFolder);
 % btkFolder     = 'C:\Users\FreslierM\Documents\MATLAB\btk';
 % addpath(btkFolder);
-subjectFolder = 'C:\Users\Ganglabor\Documents\automatisiertenEvents\Matlab\Daten\NormSubjects';
+subjectFolder = 'C:\Users\Ganglabor\Documents\automatisiertenEvents\Matlab\Daten\data_diparese';
+% subjectFolder = 'C:\Users\Ganglabor\Documents\automatisiertenEvents\Matlab\Daten\NormSubjects';
 exportFolder  = 'C:\Users\Ganglabor\Documents\automatisiertenEvents\Matlab\output\norm';
 
 %% hold the description of the data
-T = readtable([subjectFolder '\norm_description.xlsx']);
+T = readtable([subjectFolder '\di_CP_sofamea.xlsx']);
+% T = readtable([subjectFolder '\norm_description.xlsx']);
 left = T.left;
 right = T.right;
-subjects = T.Number;
+subjects = T.Subject_Study;
 clear T
 
 % -------------------------------------------------------------------------
@@ -29,8 +31,8 @@ R_FootMarkersName = { 'RHEE' 'RTPR' 'RSITA' 'RANK'...
 L_FootMarkersName = { 'LHEE' 'LTPR' 'LSITA' 'LANK'...
                       'LPMT1' 'LPMT5' 'LCUN' ...
                       'LDMT1' 'LDMT5' 'LTOE' 'LHLX'};
-FS_stat_norm.nameMarkers = FootMarkersName;
-FO_stat_norm.nameMarkers = FootMarkersName;
+FS_stat_dip.nameMarkers = FootMarkersName;
+FO_stat_dip.nameMarkers = FootMarkersName;
 
 %% subjects
 for subj= 1:size(subjects,1)
@@ -38,8 +40,8 @@ for subj= 1:size(subjects,1)
     if ~isempty(dataStr)
         side = {'L' 'R'};
         for s = 1:length(side)
-            FS_stat_norm.nameSubjects{(subj-1)*2+s,1} = [dataStr '_' side{1,s}];
-            FO_stat_norm.nameSubjects{(subj-1)*2+s,1} = [dataStr '_' side{1,s}];
+            FS_stat_dip.nameSubjects{(subj-1)*2+s,1} = [dataStr '_' side{1,s}];
+            FO_stat_dip.nameSubjects{(subj-1)*2+s,1} = [dataStr '_' side{1,s}];
             % informations of the side from excel sheet
             switch(side{1,s})
                 case 'L'
@@ -54,9 +56,9 @@ for subj= 1:size(subjects,1)
             
             %% path of the c3d
             if trial <= 9
-                c3dPath = [subjectFolder '\walkNorm_' dataStr 'a0' trialCell{1,1} '.c3d'];
+                c3dPath = [subjectFolder '\' dataStr '_0' trialCell{1,1} '.c3d'];
             else
-                c3dPath = [subjectFolder '\walkNorm_' dataStr 'a' trialCell{1,1} '.c3d'];
+                c3dPath = [subjectFolder '\' dataStr '_' trialCell{1,1} '.c3d'];
             end
 
             clear textSplit trialCell trial infoSide
@@ -108,11 +110,11 @@ for subj= 1:size(subjects,1)
                 % give all the results in 150Hz : divided by 2 = 150/300
                 if isempty(mFS) == 0 && isempty(mFO) == 0 && isempty(eFS) == 0 && isempty(eFO) == 0
                     if f==300
-                        FS_stat_norm.Ghoussayni.absError((subj-1)*2+s,iMk) = floor((eFS-mFS)/2);
-                        FO_stat_norm.Ghoussayni.absError((subj-1)*2+s,iMk) = floor((eFO-mFO)/2);
+                        FS_stat_dip.Ghoussayni.absError((subj-1)*2+s,iMk) = floor((eFS-mFS)/2);
+                        FO_stat_dip.Ghoussayni.absError((subj-1)*2+s,iMk) = floor((eFO-mFO)/2);
                     else
-                        FS_stat_norm.Ghoussayni.absError((subj-1)*2+s,iMk) = eFS-mFS;
-                        FO_stat_norm.Ghoussayni.absError((subj-1)*2+s,iMk) = eFO-mFO;
+                        FS_stat_dip.Ghoussayni.absError((subj-1)*2+s,iMk) = eFS-mFS;
+                        FO_stat_dip.Ghoussayni.absError((subj-1)*2+s,iMk) = eFO-mFO;
                     end
                 end
 
@@ -124,11 +126,11 @@ for subj= 1:size(subjects,1)
                 % give all the results in 150Hz : divided by 2 = 150/300
                 if isempty(mFS) == 0 && isempty(mFO) == 0 && isempty(eFS) == 0 && isempty(eFO) == 0
                     if f==300
-                        FS_stat_norm.Zeni.absError((subj-1)*2+s,iMk) = floor((eFS-mFS)/2);
-                        FO_stat_norm.Zeni.absError((subj-1)*2+s,iMk) = floor((eFO-mFO)/2);
+                        FS_stat_dip.Zeni.absError((subj-1)*2+s,iMk) = floor((eFS-mFS)/2);
+                        FO_stat_dip.Zeni.absError((subj-1)*2+s,iMk) = floor((eFO-mFO)/2);
                     else
-                        FS_stat_norm.Zeni.absError((subj-1)*2+s,iMk) = eFS-mFS;
-                        FO_stat_norm.Zeni.absError((subj-1)*2+s,iMk) = eFO-mFO;
+                        FS_stat_dip.Zeni.absError((subj-1)*2+s,iMk) = eFS-mFS;
+                        FO_stat_dip.Zeni.absError((subj-1)*2+s,iMk) = eFO-mFO;
                     end
                 end
                 
@@ -140,11 +142,11 @@ for subj= 1:size(subjects,1)
                 % give all the results in 150Hz : divided by 2 = 150/300
                 if isempty(mFS) == 0 && isempty(mFO) == 0 && isempty(eFS) == 0 && isempty(eFO) == 0
                     if f==300
-                        FS_stat_norm.Desailly.absError((subj-1)*2+s,iMk) = floor((eFS-mFS)/2);
-                        FO_stat_norm.Desailly.absError((subj-1)*2+s,iMk) = floor((eFO-mFO)/2);
+                        FS_stat_dip.Desailly.absError((subj-1)*2+s,iMk) = floor((eFS-mFS)/2);
+                        FO_stat_dip.Desailly.absError((subj-1)*2+s,iMk) = floor((eFO-mFO)/2);
                     else
-                        FS_stat_norm.Desailly.absError((subj-1)*2+s,iMk) = eFS-mFS;
-                        FO_stat_norm.Desailly.absError((subj-1)*2+s,iMk) = eFO-mFO;
+                        FS_stat_dip.Desailly.absError((subj-1)*2+s,iMk) = eFS-mFS;
+                        FO_stat_dip.Desailly.absError((subj-1)*2+s,iMk) = eFO-mFO;
                     end
                 end
                 
@@ -156,11 +158,11 @@ for subj= 1:size(subjects,1)
                 % give all the results in 150Hz : divided by 2 = 150/300
                 if isempty(mFS) == 0 && isempty(mFO) == 0 && isempty(eFS) == 0 && isempty(eFO) == 0
                     if f==300
-                        FS_stat_norm.Hsue.absError((subj-1)*2+s,iMk) = floor((eFS-mFS)/2);
-                        FO_stat_norm.Hsue.absError((subj-1)*2+s,iMk) = floor((eFO-mFO)/2);
+                        FS_stat_dip.Hsue.absError((subj-1)*2+s,iMk) = floor((eFS-mFS)/2);
+                        FO_stat_dip.Hsue.absError((subj-1)*2+s,iMk) = floor((eFO-mFO)/2);
                     else
-                        FS_stat_norm.Hsue.absError((subj-1)*2+s,iMk) = eFS-mFS;
-                        FO_stat_norm.Hsue.absError((subj-1)*2+s,iMk) = eFO-mFO;
+                        FS_stat_dip.Hsue.absError((subj-1)*2+s,iMk) = eFS-mFS;
+                        FO_stat_dip.Hsue.absError((subj-1)*2+s,iMk) = eFO-mFO;
                     end
                 end
 
@@ -172,11 +174,11 @@ for subj= 1:size(subjects,1)
                 % give all the results in 150Hz : divided by 2 = 150/300
                 if isempty(mFS) == 0 && isempty(mFO) == 0 && isempty(eFS) == 0 && isempty(eFO) == 0
                     if f==300
-                        FS_stat_norm.Hreljac.absError((subj-1)*2+s,iMk) = (eFS-mFS)/2;
-                        FO_stat_norm.Hreljac.absError((subj-1)*2+s,iMk) = (eFO-mFO)/2;
+                        FS_stat_dip.Hreljac.absError((subj-1)*2+s,iMk) = (eFS-mFS)/2;
+                        FO_stat_dip.Hreljac.absError((subj-1)*2+s,iMk) = (eFO-mFO)/2;
                     else
-                        FS_stat_norm.Hreljac.absError((subj-1)*2+s,iMk) = eFS-mFS;
-                        FO_stat_norm.Hreljac.absError((subj-1)*2+s,iMk) = eFO-mFO;
+                        FS_stat_dip.Hreljac.absError((subj-1)*2+s,iMk) = eFS-mFS;
+                        FO_stat_dip.Hreljac.absError((subj-1)*2+s,iMk) = eFO-mFO;
                     end
                 end
 
@@ -187,31 +189,31 @@ for subj= 1:size(subjects,1)
     end
 end % subjects
 
-FS_stat_norm.Ghoussayni.Mean = mean(abs(FS_stat_norm.Ghoussayni.absError));
-FS_stat_norm.Ghoussayni.Std = std(abs(FS_stat_norm.Ghoussayni.absError));
-FO_stat_norm.Ghoussayni.Mean = mean(abs(FO_stat_norm.Ghoussayni.absError));
-FO_stat_norm.Ghoussayni.Std = std(abs(FO_stat_norm.Ghoussayni.absError));
+FS_stat_dip.Ghoussayni.Mean = mean(abs(FS_stat_dip.Ghoussayni.absError));
+FS_stat_dip.Ghoussayni.Std = std(abs(FS_stat_dip.Ghoussayni.absError));
+FO_stat_dip.Ghoussayni.Mean = mean(abs(FO_stat_dip.Ghoussayni.absError));
+FO_stat_dip.Ghoussayni.Std = std(abs(FO_stat_dip.Ghoussayni.absError));
 
-FS_stat_norm.Zeni.Mean = mean(abs(FS_stat_norm.Zeni.absError));
-FS_stat_norm.Zeni.Std = std(abs(FS_stat_norm.Zeni.absError));
-FO_stat_norm.Zeni.Mean = mean(abs(FO_stat_norm.Zeni.absError));
-FO_stat_norm.Zeni.Std = std(abs(FO_stat_norm.Zeni.absError));
+FS_stat_dip.Zeni.Mean = mean(abs(FS_stat_dip.Zeni.absError));
+FS_stat_dip.Zeni.Std = std(abs(FS_stat_dip.Zeni.absError));
+FO_stat_dip.Zeni.Mean = mean(abs(FO_stat_dip.Zeni.absError));
+FO_stat_dip.Zeni.Std = std(abs(FO_stat_dip.Zeni.absError));
 
-FS_stat_norm.Desailly.Mean = mean(abs(FS_stat_norm.Desailly.absError));
-FS_stat_norm.Desailly.Std = std(abs(FS_stat_norm.Desailly.absError));
-FO_stat_norm.Desailly.Mean = mean(abs(FO_stat_norm.Desailly.absError));
-FO_stat_norm.Desailly.Std = std(abs(FO_stat_norm.Desailly.absError));
+FS_stat_dip.Desailly.Mean = mean(abs(FS_stat_dip.Desailly.absError));
+FS_stat_dip.Desailly.Std = std(abs(FS_stat_dip.Desailly.absError));
+FO_stat_dip.Desailly.Mean = mean(abs(FO_stat_dip.Desailly.absError));
+FO_stat_dip.Desailly.Std = std(abs(FO_stat_dip.Desailly.absError));
 
-FS_stat_norm.Hsue.Mean = mean(abs(FS_stat_norm.Hsue.absError));
-FS_stat_norm.Hsue.Std = std(abs(FS_stat_norm.Hsue.absError));
-FO_stat_norm.Hsue.Mean = mean(abs(FO_stat_norm.Hsue.absError));
-FO_stat_norm.Hsue.Std = std(abs(FO_stat_norm.Hsue.absError));
+FS_stat_dip.Hsue.Mean = mean(abs(FS_stat_dip.Hsue.absError));
+FS_stat_dip.Hsue.Std = std(abs(FS_stat_dip.Hsue.absError));
+FO_stat_dip.Hsue.Mean = mean(abs(FO_stat_dip.Hsue.absError));
+FO_stat_dip.Hsue.Std = std(abs(FO_stat_dip.Hsue.absError));
 
-FS_stat_norm.Hreljac.Mean = mean(abs(FS_stat_norm.Hreljac.absError));
-FS_stat_norm.Hreljac.Std = std(abs(FS_stat_norm.Hreljac.absError));
-FO_stat_norm.Hreljac.Mean = mean(abs(FO_stat_norm.Hreljac.absError));
-FO_stat_norm.Hreljac.Std = std(abs(FO_stat_norm.Hreljac.absError));
+FS_stat_dip.Hreljac.Mean = mean(abs(FS_stat_dip.Hreljac.absError));
+FS_stat_dip.Hreljac.Std = std(abs(FS_stat_dip.Hreljac.absError));
+FO_stat_dip.Hreljac.Mean = mean(abs(FO_stat_dip.Hreljac.absError));
+FO_stat_dip.Hreljac.Std = std(abs(FO_stat_dip.Hreljac.absError));
 
-save([exportFolder '\FS_stat_norm.mat'],'FS_stat_norm');
-save([exportFolder '\FO_stat_norm.mat'],'FO_stat_norm');
+save([exportFolder '\FS_stat_dip.mat'],'FS_stat_dip');
+save([exportFolder '\FO_stat_dip.mat'],'FO_stat_dip');
 
